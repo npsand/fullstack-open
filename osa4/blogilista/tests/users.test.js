@@ -51,7 +51,7 @@ test('test invalid user creation, when password is shorter than 3', async () =>{
       .expect('Content-Type', /application\/json/)
 
     expect(result.body.error).toContain('`username` to be unique')
-
+    console.log('username', result.body)
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })

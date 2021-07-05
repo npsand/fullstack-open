@@ -3,8 +3,13 @@ const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
 
+const User = require('../models/user')
 const Blog = require('../models/blog')
+
+//token for postin blogs
+let token = null;
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -16,7 +21,26 @@ beforeEach(async () => {
   await blogObject.save()
 })
 
+beforeAll(async () => {
+  await User.deleteMany({})
+  
+  const saltRounds = 10
+  const passwordHash = await bcrypt.hash('admin', saltRounds)
+  const user = new User({ username: 'admin', passwordHash })
+
+  await user.save()
+  await api
+    .post('/api/login')
+    .send({ username: 'admin', password: 'admin' })
+    .then((result) => {
+      return (token = result.body.token)
+    })
+
+  return token
+})
+
 test('there are two notes', async () => {
+  console.log('testi123', token)
     const response = await api.get('/api/blogs')
 
     expect(response.body).toHaveLength(2)
@@ -40,6 +64,7 @@ test('notes amount increase when POST', async () =>{
 
   await api
     .post('/api/blogs')
+    .set({ 'Authorization': 'bearer ' + token })
     .send(blog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -63,6 +88,7 @@ test('likes default value is zero', async () =>{
 
   await api
     .post('/api/blogs')
+    .set({ 'Authorization': 'bearer ' + token })
     .send(blog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -85,6 +111,7 @@ test('response 400, if no title or url', async () =>{
 
   await api
     .post('/api/blogs')
+    .set({ 'Authorization': 'bearer ' + token })
     .send(blog)
     .expect(400)
     
@@ -93,6 +120,19 @@ test('response 400, if no title or url', async () =>{
   expect(response.body).toHaveLength(helper.initialBlogs.length)
 })
 
+test('if token is missing return 401 statuscode', async () => {
+
+  const blog = {
+    title: 'sdajhdsialhdasod',
+    author: 'Absadasdasdobr',
+    likes: 1342234
+  }
+
+  await api.post('/api/blogs', blog)
+    .send(blog)
+    .expect(401)
+    .expect('Content-Type', /application\/json/)
+})
 
 afterAll(() => {
   mongoose.connection.close()
