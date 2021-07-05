@@ -23,8 +23,6 @@ blogsRouter.post('/', async (request, response, next) => {
 
     const body = request.body
 
-
-
     const blog = new Blog({
       title: body.title,
       author: body.author,
@@ -56,7 +54,6 @@ blogsRouter.delete('/:id', async(request, response) =>{
     return response.status(401).json({ error: 'token missing or invalid' });
   }
 
-  
   blog = await Blog.findById(id);
 
   if ( blog.user.toString() === user.id.toString() ){
