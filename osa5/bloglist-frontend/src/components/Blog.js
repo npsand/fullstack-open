@@ -48,7 +48,7 @@ const Blog = ({ blog, token }) => {
     <div style={blogStyle}>
       {!showAll ?
         <div>
-          {blog.title} {blog.author} <button onClick={() => setShowAll(true)} >view</button>
+          {blog.title} {blog.author} <button id="viewButton" onClick={() => setShowAll(true)} >view</button>
         </div>
         :
         <div className='expand'>

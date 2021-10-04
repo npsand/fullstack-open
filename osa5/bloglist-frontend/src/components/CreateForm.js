@@ -35,7 +35,7 @@ const CreateForm = ({ createBlog }) => {
         <br />
                 url: <input className='url' type="text" onChange={handleUrlChange}/>
         <br />
-        <button type="submit">create</button>
+        <button className='createButton' type="submit">create</button>
       </form>
     </div>
   )

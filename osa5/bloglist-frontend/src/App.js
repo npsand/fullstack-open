@@ -80,9 +80,9 @@ const App = () => {
         <h2>Log in to application</h2>
         <Notification message={errorMessage}  error={isError}/>
         <form onSubmit={login}>
-          username: <input type="text"  onChange={handleUsernameChange} />
+          username: <input id='username' type="text"  onChange={handleUsernameChange} />
           <br />
-          password: <input type="password" onChange={handlePasswordChange}/>
+          password: <input id='password' type="password" onChange={handlePasswordChange}/>
           <br />
           <button type="submit">login</button>
         </form>
@@ -100,9 +100,11 @@ const App = () => {
         <CreateForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs.sort((a,b) => a.likes > b.likes ? -1 : 1).map(blog =>
-        <Blog className='blog' key={blog.id} blog={blog} token={localStorage.getItem('user')} />
-      )}
+      <div id="blogs">
+        {blogs.sort((a,b) => a.likes > b.likes ? -1 : 1).map(blog =>
+          <Blog className='blog' key={blog.id} blog={blog} token={localStorage.getItem('user')} />
+        )}
+      </div>
     </div>
   )
 }
